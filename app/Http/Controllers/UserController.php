@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -13,7 +15,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::get();
+
+        return view('users.index', data: ["users" => $users]);
     }
 
     /**
@@ -21,7 +25,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('users.create');
     }
 
     /**
@@ -29,7 +33,23 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        //
+
+        $passwordHash = Hash::make($request->get('password'));
+        $user = new User();
+        $user -> id = Date::now() -> timestamp;
+        $user -> firstName = $request->get('firstName');
+        $user -> middleName = $request->get('middleName');
+        $user -> lastName = $request->get('lastName');
+        $user -> email = $request->get('email');
+        $user -> mobile = $request->get('mobile');
+        $user -> passwordHash = $passwordHash;
+        $user -> intro = $request->get('intro');
+        $user -> profile = $request->get('profile');
+        $user -> registedAt = Date::now();
+        $user -> lastLogin  = Date::now();
+
+        $user -> save();
+
     }
 
     /**

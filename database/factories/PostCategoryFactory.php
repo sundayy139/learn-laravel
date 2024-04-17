@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post_meta>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
  */
-class PostMetaFactory extends Factory
+class PostCategoryFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,10 +19,8 @@ class PostMetaFactory extends Factory
     public function definition(): array
     {
         return [
-            "id" => $this->faker->unixTime,
             "postId" => Post::query()->inRandomOrder()->value('id'),
-            "key" => $this->faker->uuid,
-            "content" => $this->faker->text,
+            "categoryId" => Category::query()->inRandomOrder()->value('id'),
         ];
     }
 }

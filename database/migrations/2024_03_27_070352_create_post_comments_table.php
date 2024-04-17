@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('post_comments', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary()->unique();
             $table->unsignedBigInteger('postId');
-            $table->unsignedBigInteger('parentId');
+            $table->unsignedBigInteger('parentId')->nullable();;
             $table->string('title', 75);
             $table->tinyInteger('published')->default(0);
             $table->dateTime('createdAt');

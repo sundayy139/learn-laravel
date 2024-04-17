@@ -2,12 +2,15 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
  */
 class PostFactory extends Factory
+
 {
     /**
      * Define the model's default state.
@@ -16,8 +19,21 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
+        $title = $this->faker->text(75);
+        $slug = Str::slug($title);
         return [
-            //
+            "id" => $parentId = $this->faker->unixTime,
+            "authorId" => User::query()->inRandomOrder()->value('id'),
+            "parentId" => $parentId,
+            "title" => $title,
+            "metaTitle" => $this->faker->text(100),
+            "slug" =>  $slug,
+            "sumary" => $this->faker->text(25),
+            "published" => $this->faker->boolean() ?  0 : 1,
+            "createdAt" => $this->faker->dateTime,
+            "updatedAt" => $this->faker->dateTime,
+            "publishedAt" => $this->faker->dateTime,
+            "content" => $this->faker->text,
         ];
     }
 }

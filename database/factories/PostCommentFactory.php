@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,14 @@ class PostCommentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            "id" => $parentId = $this->faker->unixTime,
+            "postId" =>  Post::query()->inRandomOrder()->value('id'),
+            "parentId" => $parentId,
+            "title" => $this->faker->text(75),
+            "published" =>  $this->faker->boolean() ?  0 : 1,
+            "createdAt" => $this->faker->dateTime,
+            "publishedAt" => $this->faker->dateTime,
+            "content" => $this->faker->text,
         ];
     }
 }
