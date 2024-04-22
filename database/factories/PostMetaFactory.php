@@ -18,7 +18,6 @@ class PostMetaFactory extends Factory
     public function definition(): array
     {
         return [
-            "id" => $this->faker->unixTime,
             "postId" => Post::query()->inRandomOrder()->value('id'),
             "key" => $this->faker->uuid,
             "content" => $this->faker->text,

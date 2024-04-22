@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('posts', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary()->unique();
+            $table->unsignedBigInteger('id')->primary()->unique()->autoIncrement();
             $table->unsignedBigInteger('authorId');
             $table->unsignedBigInteger('parentId')->nullable();
             $table->string('title', 75);
@@ -27,8 +27,8 @@ return new class extends Migration
         });
 
         Schema::table('posts', function (Blueprint $table) {
-            $table->foreign('authorId')->references('id')->on('users');
-            $table->foreign('parentId')->references('id')->on('posts');
+            $table->foreign('authorId')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('parentId')->references('id')->on('posts')->onDelete('cascade');
         });
     }
 

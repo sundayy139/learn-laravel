@@ -22,7 +22,6 @@ class TagFactory extends Factory
         $slug = Str::slug($title);
 
         return [
-            "id" =>  $this->faker->unixTime,
             "title" => $title,
             "metaTitle" => $this->faker->text(100),
             "slug" => $slug,

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('post_comments', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary()->unique();
+            $table->unsignedBigInteger('id')->primary()->unique() -> autoIncrement();
             $table->unsignedBigInteger('postId');
             $table->unsignedBigInteger('parentId')->nullable();;
             $table->string('title', 75);
@@ -23,8 +23,8 @@ return new class extends Migration
         });
 
         Schema::table('post_comments', function (Blueprint $table) {
-            $table->foreign('postId')->references('id')->on('posts');
-            $table->foreign('parentId')->references('id')->on('post_comments');
+            $table->foreign('postId')->references('id')->on('posts')->onDelete('cascade');
+            $table->foreign('parentId')->references('id')->on('post_comments')->onDelete('cascade');
         });
     }
 

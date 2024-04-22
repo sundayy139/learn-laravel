@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('post_metas', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary()->unique();
+            $table->unsignedBigInteger('id')->primary()->unique() -> autoIncrement();
             $table->unsignedBigInteger('postId');
             $table->string('key', 50);
             $table->text('content');
         });
 
         Schema::table('post_metas', function (Blueprint $table) {
-            $table->foreign('postId')->references('id')->on('posts');
+            $table->foreign('postId')->references('id')->on('posts')->onDelete('cascade');
         });
     }
 

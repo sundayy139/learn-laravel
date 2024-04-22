@@ -17,8 +17,8 @@ return new class extends Migration
         });
 
         Schema::table('post_categories', function (Blueprint $table) {
-            $table->foreign('postId')->references('id')->on('posts');
-            $table->foreign('categoryId')->references('id')->on('categories');
+            $table->foreign('postId')->references('id')->on('posts')->onDelete('cascade');
+            $table->foreign('categoryId')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 

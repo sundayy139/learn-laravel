@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model
+class User extends Authenticatable 
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens, Notifiable ;
 
     public $timestamps  = false;
 
@@ -19,5 +23,39 @@ class User extends Model
         );
     }
 
-    
+    protected $hidden = [
+        'password'
+    ];
+
+    protected $fillable = [
+        'id',
+        'firstName',
+        'middleName', 
+        'lastName', 
+        'email', 
+        'mobile', 
+        'password', 
+        'intro', 
+        'profile', 
+        'registedAt', 
+        'lastLogin'
+    ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function ($user) {
+            $user->password = Hash::make($user->password);
+        });
+
+        self::updating(function ($user) {
+            $user->password = Hash::make($user->password);
+        });
+    }
+
+    public function posts() : HasMany 
+    {
+        return $this->hasMany(Post::class, 'authorId');
+    } 
 }

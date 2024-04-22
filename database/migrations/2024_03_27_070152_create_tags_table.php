@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tags', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary()->unique();
+            $table->unsignedBigInteger('id')->primary()->unique() -> autoIncrement();
             $table->string('title', 75);
-            $table->string('metaTitle', 100);
+            $table->string('metaTitle', 100) -> nullable();
             $table->string('slug', 100);
-            $table->text('content');
+            $table->text('content')-> nullable();
         });
     }
 

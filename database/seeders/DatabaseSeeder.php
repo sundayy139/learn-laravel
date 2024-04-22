@@ -20,13 +20,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(10)->create();
-        Post::factory(10)->create();
-        Category::factory(10)->create();
-        PostComment::factory(10)->create();
-        PostMeta::factory(10)->create();
-        Tag::factory(10)->create();
-        PostTag::factory(10)->create();
-        PostCategory::factory(10)->create();
+        User::factory(50)->create();
+        Post::factory(50)->create();
+        Category::factory(50)->create();
+        Tag::factory(50)->create();
+        PostMeta::factory(50)->create();
+        PostComment::factory(50)->create();
+        PostTag::factory(50)->create();
+        PostCategory::factory(50)->create();
     }
 }

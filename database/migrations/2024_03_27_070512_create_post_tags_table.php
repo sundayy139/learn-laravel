@@ -17,8 +17,8 @@ return new class extends Migration
         });
 
         Schema::table('post_tags', function (Blueprint $table) {
-            $table->foreign('postId')->references('id')->on('posts');
-            $table->foreign('tagId')->references('id')->on('tags');
+            $table->foreign('postId')->references('id')->on('posts')->onDelete('cascade');
+            $table->foreign('tagId')->references('id')->on('tags')->onDelete('cascade');
         });
     }
 

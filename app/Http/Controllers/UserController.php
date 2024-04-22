@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
 {
@@ -15,41 +18,29 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::get();
+        $users = QueryBuilder::for(User::class)
+        ->allowedFilters('id', 'registedAt', 'firstName','middleName', 'lastName', 'email', 'mobile')
+        ->defaultSort('-id')
+        ->allowedSorts(['id', 'registedAt', 'firstName', 'middleName','lastName', 'email', 'mobile'])
+        ->paginate(env('PAGINATE'));
 
-        return view('users.index', data: ["users" => $users]);
+        return new UserCollection($users);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('users.create');
-    }
+
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreUserRequest $request)
     {
+        $validated = $request->validated();
+        $validated['registedAt'] = Date::now();
+        $validated['lastLogin'] = Date::now();
 
-        $passwordHash = Hash::make($request->get('password'));
-        $user = new User();
-        $user -> id = Date::now() -> timestamp;
-        $user -> firstName = $request->get('firstName');
-        $user -> middleName = $request->get('middleName');
-        $user -> lastName = $request->get('lastName');
-        $user -> email = $request->get('email');
-        $user -> mobile = $request->get('mobile');
-        $user -> passwordHash = $passwordHash;
-        $user -> intro = $request->get('intro');
-        $user -> profile = $request->get('profile');
-        $user -> registedAt = Date::now();
-        $user -> lastLogin  = Date::now();
-
-        $user -> save();
-
+        $user = User::create($validated);
+        
+        return new UserResource($user);
     }
 
     /**
@@ -58,6 +49,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         //
+        return UserResource::make(($user));
     }
 
     /**
@@ -73,7 +65,11 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        //
+        $validated = $request->validated();
+
+        $user->update($validated);
+
+        return new UserResource($user);
     }
 
     /**
@@ -81,6 +77,11 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $user -> delete();
+        
+        return response()-> json([
+            'success' => true,
+            'message' => 'User deleted successfully'
+        ]);
     }
 }

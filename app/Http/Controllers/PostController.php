@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\PostCollection;
+use App\Http\Resources\PostResource;
+use App\Models\Category;
+use App\Models\Tag;
+use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PostController extends Controller
 {
@@ -13,7 +19,13 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        $post = QueryBuilder::for(Post::class)
+        ->allowedFilters('id','title', 'metaTitle', 'authorId', 'parentId', 'sumary', 'createdAt', 'updatedAt', 'published')
+        ->defaultSort('-id')
+        ->allowedSorts(['id', 'title', 'metaTitle', 'authorId','createdAt', 'updatedAt', 'published'])
+        ->paginate(env('PAGINATE'));
+
+        return new PostCollection($post);
     }
 
     /**
@@ -29,7 +41,27 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        $post = Auth::user() -> posts() -> create($validated);
+        
+        if ($request->has('tags')) {
+            foreach ($request->tags as $tagName) {
+                $tag = Tag::firstOrCreate(['title' => $tagName]);
+
+                $post->tags()->attach($tag->id);
+            }
+        }
+
+        if ($request->has('categories')) {
+            foreach ($request->categories as $categoryName) {
+                $category = Category::firstOrCreate(['title' => $categoryName]);
+
+                $post->categories()->attach($category->id);
+            }
+        }
+
+        return new PostResource($post);
     }
 
     /**
@@ -37,7 +69,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        return new PostResource($post);
     }
 
     /**
@@ -53,7 +85,35 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        $validated = $request->validated();
+
+        $post->update($validated);
+
+        if ($request->has('tags')) {
+            $tagIds = [];
+            foreach ($request->tags as $tagName) {
+                $tag = Tag::firstOrCreate(['title' => $tagName]);
+                $tagIds[] = $tag->id;
+            }
+    
+            $post->tags()->sync($tagIds);
+        } else {
+            $post->tags()->detach();
+        }
+
+        if ($request->has('categories')) {
+            $categoryIds = [];
+            foreach ($request->categories as $categoryName) {
+                $category = Category::firstOrCreate(['title' => $categoryName]);
+                $categoryIds[] = $category->id;
+            }
+    
+            $post->categories()->sync($categoryIds);
+        } else {
+            $post->categories()->detach();
+        }
+
+        return new PostResource($post);
     }
 
     /**
@@ -61,6 +121,11 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post -> delete();
+        
+        return response()-> json([
+            'success' => true,
+            'message' => 'Post deleted successfully'
+        ]);
     }
 }

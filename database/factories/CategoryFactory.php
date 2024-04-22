@@ -22,8 +22,6 @@ class CategoryFactory extends Factory
         $slug = Str::slug($title);
 
         return [
-            "id" => $parentId = $this->faker->unixTime,
-            "parentId" => $parentId,
             "title" =>  $title,
             "metaTitle" => $this->faker->text(100),
             "slug" => $slug,

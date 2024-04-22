@@ -22,9 +22,7 @@ class PostFactory extends Factory
         $title = $this->faker->text(75);
         $slug = Str::slug($title);
         return [
-            "id" => $parentId = $this->faker->unixTime,
             "authorId" => User::query()->inRandomOrder()->value('id'),
-            "parentId" => $parentId,
             "title" => $title,
             "metaTitle" => $this->faker->text(100),
             "slug" =>  $slug,
