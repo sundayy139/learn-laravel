@@ -7,9 +7,8 @@ use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 use App\Http\Resources\TagCollection;
 use App\Http\Resources\TagResource;
+use Illuminate\Support\Facades\Cache;
 use Spatie\QueryBuilder\QueryBuilder;
-
-use function Laravel\Prompts\progress;
 
 class TagController extends Controller
 {
@@ -18,11 +17,20 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = QueryBuilder::for(Tag::class)
-        ->allowedFilters('id','title', 'metaTitle')
-        ->defaultSort('-id')
-        ->allowedSorts(['id', 'title', 'metaTitle'])
-        ->paginate(env('PAGINATE'));
+        $cacheKey = 'tags';
+
+        if (Cache::has( $cacheKey)){
+            $tags = Cache::get( $cacheKey);
+        }
+         else {
+            $tags = QueryBuilder::for(Tag::class)
+            ->allowedFilters('id','title', 'metaTitle')
+            ->defaultSort('-id')
+            ->allowedSorts(['id', 'title', 'metaTitle'])
+            ->paginate(env('PAGINATE'));
+
+            Cache::forever($cacheKey, $tags);
+        }
 
         return new TagCollection($tags);
     }

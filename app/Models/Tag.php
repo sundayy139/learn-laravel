@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Cache;
 
 class Tag extends Model
 {
@@ -30,8 +31,18 @@ class Tag extends Model
         ];
     }
 
+    protected static function boot()
+        {
+            parent::boot();
+
+            static::saving(function() {
+                Cache::forget('tags');
+            });
+        }
+
     public function posts() : BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'post_tags', 'tagId', 'postId');
     }
+    
 }
