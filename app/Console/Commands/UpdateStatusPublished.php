@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\Post;
 use Carbon\Carbon;
 
-class UpdatePublishStatus extends Command
+class UpdateStatusPublished extends Command
 {
     protected $signature = 'publish:update';
 
@@ -20,14 +20,13 @@ class UpdatePublishStatus extends Command
     public function handle()
     {
         $this->info('Start updating publish status...');
-
-        $posts = Post::where('publishedAt', '<', Carbon::now())->get();
-
-        foreach ($posts as $post) {
-            $post->published = 1;
-            $post->save();
+    
+        try {
+            Post::where('publishedAt', '<', Carbon::now())->update(['published' => 1]);
+    
+            $this->info('Publish status updated for eligible posts.');
+        } catch (\Exception $e) {
+            $this->error('Error updating publish status: ' . $e->getMessage());
         }
-
-        $this->info('Publish status updated for eligible posts.');
     }
 }
