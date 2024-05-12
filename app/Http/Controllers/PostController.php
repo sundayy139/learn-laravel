@@ -68,7 +68,7 @@ class PostController extends Controller
             return new PostResource($post);
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json(['message' => 'Error occurred while saving post.'], 500);
         }
     }
